@@ -96,3 +96,15 @@ g = multi.groupby("Order Id")[measure_cols].nunique(dropna=False)
 print("Orders with more than one value (large = column belongs to the line):")
 print((g > 1).sum())
 print("Orders checked:", len(g))
+
+print("=======================================================================")
+# Revenue definition: Sales - Discount vs Order Item Total (rows that differ)
+print((abs(df["Sales"] - df["Order Item Discount"] - df["Order Item Total"]) > 0.01).sum())
+print("-----------------------------------------------------------------------")
+# What does Late_delivery_risk mean? Compare with Delivery Status
+print(pd.crosstab(df["Delivery Status"], df["Late_delivery_risk"]))
+print("-----------------------------------------------------------------------")
+
+# Delay in days: real minus scheduled, compared with Delivery Status
+df["delay_days"] = df["Days for shipping (real)"] - df["Days for shipment (scheduled)"]
+print(df.groupby("Delivery Status")["delay_days"].describe())

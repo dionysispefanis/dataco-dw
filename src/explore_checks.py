@@ -7,7 +7,7 @@
 """
 import pandas as pd
 
-df = pd.read_csv("data/DataCoSupplyChainDataset.csv", encoding="latin-1")
+df = pd.read_csv("data/DataCoSupplyChainDataset.csv", encoding="cp1252")
 
 # ---------------------------------------------------------------------------
 # A. Identical columns (expected: 0 differing rows)

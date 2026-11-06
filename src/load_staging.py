@@ -7,7 +7,7 @@ CSV_PATH = "data/DataCoSupplyChainDataset.csv"
 
 df = pd.read_csv(
         CSV_PATH,
-        encoding="latin-1",
+        encoding="cp1252",
         dtype=str,
         keep_default_na=False,
         na_values=[""]

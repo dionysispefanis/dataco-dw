@@ -118,3 +118,19 @@ defined in decision 4.
 **Pipeline:** Python loads the CSV into staging, then runs the SQL files in order. Every run rebuilds all layers.
 
 **Database:** SQL Server (local), connected to Power BI.
+
+
+## 6. Source encoding
+
+**Decision:** the CSV is read as `cp1252` (not `latin-1`). Characters missing from `cp1252` were replaced by `?` in the source file and cannot be recovered; they are left as they are.
+
+**Evidence:**
+- `Šiauliai` and `Žilina` loaded with an invisible first character under `latin-1` (codes 138 and 142); with `cp1252` they load correctly (codes 352 and 381).
+- A literal `?` appears in 6 `Order State` and 6 `Order City` values (e.g. `Gy?r`, `Klaip?da`), in 309 rows (0.17%). No other text column is affected.
+
+
+## 7. Country names
+
+**Decision:** country names stay as in the source (Spanish, not translated). One change: `EE. UU.` in customer country becomes `Estados Unidos`, to match delivery country. `Puerto Rico` stays separate.
+
+**Evidence:** customer country has 2 values (111,146 and 69,373 rows). Delivery country has 164 values and no country appears under two names. The United States is written `EE. UU.` in customer country and `Estados Unidos` in delivery country.

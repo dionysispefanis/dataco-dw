@@ -1,7 +1,7 @@
 """First look at the DataCo main file: size, types, missing values, distinct counts."""
 import pandas as pd
 
-df = pd.read_csv("data/DataCoSupplyChainDataset.csv", encoding="latin-1")
+df = pd.read_csv("data/DataCoSupplyChainDataset.csv", encoding="cp1252")
 
 # Size, column types and columns with missing values
 print(df.shape)

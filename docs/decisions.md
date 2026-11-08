@@ -134,3 +134,26 @@ defined in decision 4.
 **Decision:** country names stay as in the source (Spanish, not translated). One change: `EE. UU.` in customer country becomes `Estados Unidos`, to match delivery country. `Puerto Rico` stays separate.
 
 **Evidence:** customer country has 2 values (111,146 and 69,373 rows). Delivery country has 164 values and no country appears under two names. The United States is written `EE. UU.` in customer country and `Estados Unidos` in delivery country.
+
+## 8. Customer zipcode
+
+**Decision:** customer zipcode is kept as text and padded with zeros on the left to 5 characters. The 3 empty values stay `NULL`.
+
+**Why:** the source stored the zipcode as a number, so leading zeros were lost (`725` instead of `00725`). All customers are in the US or Puerto Rico, where zipcodes have 5 digits.
+
+**Evidence:** lengths in staging: 3 characters in 69,373 rows (all Puerto Rico), 4 in 6,135 rows, 5 in 105,008 rows, 3 empty.
+
+## 9. Order status
+
+**Decision:** all rows stay in the warehouse. Orders with status `CANCELED` and `SUSPECTED_FRAUD` (2,855 orders, 4.3%) are excluded from all KPIs. `Order Status` stays as a plain column in `fact_orders`.
+
+**Why:** "Shipping canceled" appears only with these two statuses, so these orders have no real shipment. 
+
+**Evidence:** crosstab of `Order Status` and `Delivery Status` (23 combinations, 65,752 orders).
+
+
+## 10. Shifted customer columns
+
+**Decision:** 3 rows (3 customers) have customer city, state and zipcode shifted by one position: the city is missing, `customer_state` holds the zipcode and `customer_city` holds the state code. In the clean layer, rows where `Customer State` is 5 digits are shifted back: state from the city column, zipcode from the state column, city set to `NULL`.
+
+**Evidence:** `Customer State` has 2-letter codes in all rows except 3 (`91732`, `95758`); in the same 3 rows `Customer City` is `CA` and `Customer Zipcode` is empty. Each of the 3 customers appears in one row only.

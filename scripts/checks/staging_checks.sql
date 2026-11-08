@@ -231,4 +231,48 @@ FROM (
         [Sales], [Order Item Discount], [Benefit per order]
     HAVING COUNT(*) > 1
 ) t;
- 
+
+
+-- 14. Text lengths
+-- Question: how long is the longest value in each text column?
+-- Used to choose the NVARCHAR sizes in clean.orders 
+-- Found: longest values between 5 and 94 characters. Customer State had 5
+-- instead of 2, which led to check 15.
+SELECT 'order_status' AS column_name, MAX(LEN([Order Status])) AS max_length FROM staging.orders_raw
+UNION ALL SELECT 'payment_type',     MAX(LEN([Type]))             FROM staging.orders_raw
+UNION ALL SELECT 'shipping_mode',    MAX(LEN([Shipping Mode]))    FROM staging.orders_raw
+UNION ALL SELECT 'delivery_status',  MAX(LEN([Delivery Status]))  FROM staging.orders_raw
+UNION ALL SELECT 'market',           MAX(LEN([Market]))           FROM staging.orders_raw
+UNION ALL SELECT 'order_region',     MAX(LEN([Order Region]))     FROM staging.orders_raw
+UNION ALL SELECT 'order_country',    MAX(LEN([Order Country]))    FROM staging.orders_raw
+UNION ALL SELECT 'order_state',      MAX(LEN([Order State]))      FROM staging.orders_raw
+UNION ALL SELECT 'order_city',       MAX(LEN([Order City]))       FROM staging.orders_raw
+UNION ALL SELECT 'customer_segment', MAX(LEN([Customer Segment])) FROM staging.orders_raw
+UNION ALL SELECT 'customer_city',    MAX(LEN([Customer City]))    FROM staging.orders_raw
+UNION ALL SELECT 'customer_state',   MAX(LEN([Customer State]))   FROM staging.orders_raw
+UNION ALL SELECT 'customer_country', MAX(LEN([Customer Country])) FROM staging.orders_raw
+UNION ALL SELECT 'product_name',     MAX(LEN([Product Name]))     FROM staging.orders_raw
+UNION ALL SELECT 'product_image',    MAX(LEN([Product Image]))    FROM staging.orders_raw
+UNION ALL SELECT 'category_name',    MAX(LEN([Category Name]))    FROM staging.orders_raw
+UNION ALL SELECT 'department_name',  MAX(LEN([Department Name]))  FROM staging.orders_raw;
+
+
+-- 15. Customer state
+-- Question: are all customer states 2-letter codes?
+-- Found: all states are 2-letter codes except 3 rows (91732, 95758),
+-- which are zipcodes. In the same rows Customer City is a state code ("CA")
+-- and Customer Zipcode is empty: the three columns are shifted by one position.
+-- Each of the 3 customers appears in one row only.
+SELECT [Customer State], COUNT(*) AS rows_count
+FROM staging.orders_raw
+GROUP BY [Customer State]
+ORDER BY rows_count DESC;
+
+SELECT
+    [Customer Id], [Customer City], [Customer State],
+    [Customer Zipcode], [Customer Country],
+    COUNT(*) AS rows_count
+FROM staging.orders_raw
+WHERE LEN([Customer State]) <> 2
+GROUP BY [Customer Id], [Customer City], [Customer State],
+         [Customer Zipcode], [Customer Country];

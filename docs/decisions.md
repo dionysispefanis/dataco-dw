@@ -154,6 +154,6 @@ defined in decision 4.
 
 ## 10. Shifted customer columns
 
-**Decision:** 3 rows (3 customers) have customer city, state and zipcode shifted by one position: the city is missing, `customer_state` holds the zipcode and `customer_city` holds the state code. In the clean layer, rows where `Customer State` is 5 digits are shifted back: state from the city column, zipcode from the state column, city set to `NULL`.
+**Decision:** 3 rows (3 customers) have customer city, state and zipcode shifted by one position: the city is missing, `Customer State` holds the zipcode and `Customer City` holds the state code. In the clean layer, rows where `Customer State` is 5 digits are shifted back: state from the city column, zipcode from the state column, city set to `NULL`.
 
-**Evidence:** `Customer State` has 2-letter codes in all rows except 3 (`91732`, `95758`); in the same 3 rows `Customer City` is `CA` and `Customer Zipcode` is empty. Each of the 3 customers appears in one row only.
+**Evidence:** check 13 in `scripts/checks/staging_checks.sql`. `Customer State` has 2-letter codes in all rows except 3 (`91732`, `95758`); in the same 3 rows `Customer City` is `CA` and `Customer Zipcode` is empty. Each of the 3 customers appears in one row only.

@@ -59,7 +59,7 @@ FROM staging.orders_raw;
  
 -- 4. Unusual characters in Order State
 -- Question: which states contain characters outside the normal keyboard range?
--- Found: mostly valid accented names. Two problems showed up (see 6a and 6b).
+-- Found: mostly valid accented names. Two problems showed up (see 4a and 4b).
 SELECT DISTINCT [Order State]
 FROM staging.orders_raw
 WHERE [Order State] COLLATE Latin1_General_BIN2 LIKE '%[^ -~]%'
@@ -213,7 +213,7 @@ GROUP BY [Order Status], [Delivery Status]
 ORDER BY [Order Status], [Delivery Status];
  
  
--- 13. Repeated rows
+-- 11. Repeated rows
 -- Question: are there rows with the same order, product, quantity and amounts?
 -- Expected: 0.
 -- Found: 0.
@@ -233,11 +233,11 @@ FROM (
 ) t;
 
 
--- 14. Text lengths
+-- 12. Text lengths
 -- Question: how long is the longest value in each text column?
 -- Used to choose the NVARCHAR sizes in clean.orders 
 -- Found: longest values between 5 and 94 characters. Customer State had 5
--- instead of 2, which led to check 15.
+-- instead of 2, which led to check 13.
 SELECT 'order_status' AS column_name, MAX(LEN([Order Status])) AS max_length FROM staging.orders_raw
 UNION ALL SELECT 'payment_type',     MAX(LEN([Type]))             FROM staging.orders_raw
 UNION ALL SELECT 'shipping_mode',    MAX(LEN([Shipping Mode]))    FROM staging.orders_raw
@@ -257,7 +257,7 @@ UNION ALL SELECT 'category_name',    MAX(LEN([Category Name]))    FROM staging.o
 UNION ALL SELECT 'department_name',  MAX(LEN([Department Name]))  FROM staging.orders_raw;
 
 
--- 15. Customer state
+-- 13. Customer state
 -- Question: are all customer states 2-letter codes?
 -- Found: all states are 2-letter codes except 3 rows (91732, 95758),
 -- which are zipcodes. In the same rows Customer City is a state code ("CA")

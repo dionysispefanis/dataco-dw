@@ -118,3 +118,26 @@ FROM clean.orders
 ORDER BY product_id;
 
 
+-- Customer dimension: one row per customer (no history, Type I).
+
+DROP TABLE IF EXISTS dw.dim_customer;
+
+CREATE TABLE dw.dim_customer (
+    customer_key      INT IDENTITY(1,1) PRIMARY KEY,
+    customer_id       INT           NOT NULL,
+    customer_segment  NVARCHAR(50)  NOT NULL,
+    customer_city     NVARCHAR(50),
+    customer_state    NVARCHAR(50)  NOT NULL,
+    customer_country  NVARCHAR(50)  NOT NULL,
+    customer_zipcode  NVARCHAR(5)   NOT NULL
+);
+
+INSERT INTO dw.dim_customer (
+    customer_id, customer_segment, customer_city,
+    customer_state, customer_country, customer_zipcode
+)
+SELECT DISTINCT
+    customer_id, customer_segment, customer_city,
+    customer_state, customer_country, customer_zipcode
+FROM clean.orders
+ORDER BY customer_id;

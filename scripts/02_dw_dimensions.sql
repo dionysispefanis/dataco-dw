@@ -118,7 +118,7 @@ FROM clean.orders
 ORDER BY product_id;
 
 
--- Customer dimension: one row per customer (no history, Type I).
+-- Customer dimension: one row per customer
 
 DROP TABLE IF EXISTS dw.dim_customer;
 

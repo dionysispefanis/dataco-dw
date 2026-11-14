@@ -5,8 +5,10 @@ import time
 from db import get_engine
 from run_sql import run_sql_file
 from run_checks import run_checks
+from load_staging import load_staging
 
 STEPS = [
+    ("load",    "data/DataCoSupplyChainDataset.csv"),
     ("sql",     "scripts/01_clean.sql"),
     ("checks",  "tests/quality_checks_clean.sql"),
     ("sql",     "scripts/02_dw_dimensions.sql"),
@@ -21,7 +23,9 @@ def main():
 
     for kind, path in STEPS:
         try:
-            if kind == "sql":
+            if kind == "load":
+                load_staging(engine, path)
+            elif kind == "sql":
                 run_sql_file(engine, path)
             else:
                 run_checks(engine, path)

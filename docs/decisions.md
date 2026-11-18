@@ -170,3 +170,41 @@ defined in decision 4.
 **Decision:** 3 rows (3 customers) have customer city, state and zipcode shifted by one position: the city is missing, `Customer State` holds the zipcode and `Customer City` holds the state code. In the clean layer, rows where `Customer State` is 5 digits are shifted back: state from the city column, zipcode from the state column, city set to `NULL`.
 
 **Evidence:** check 13 in `scripts/checks/staging_checks.sql`. `Customer State` has 2-letter codes in all rows except 3 (`91732`, `95758`); in the same 3 rows `Customer City` is `CA` and `Customer Zipcode` is empty. Each of the 3 customers appears in one row only.
+
+
+## 11. One order line per order from November 2017
+
+**What I saw:** until September 2017, an order has about 3 lines. From November
+2017, every order has only 1 line.
+
+**What happens:** the number of orders stays the same (about 2,000 per month),
+but the monthly revenue gets smaller.
+
+**Decision:** I keep the data as it is and I add a note under the revenue chart.
+
+**Evidence:** `scripts/checks/order_lines_per_month.sql`
+
+
+## 12. Markets cover different periods
+
+**What I saw:** each market has orders in different months. Africa has 6 months,
+USCA 10 months. Europe has orders in 18 of 31 months, LATAM in 11 of 30 and
+Pacific Asia in 16 of 28. After 10 November 2017 only Pacific Asia has orders.
+
+**Decision:** I keep the data as it is. Revenue by market is not a fair comparison
+of market size, because the markets do not cover the same months.
+
+**Evidence:** `scripts/checks/market_coverage.sql`
+
+
+
+## 13. First Class orders are always late
+
+**What I saw:** the scheduled days are fixed for each shipping mode (First Class 1,
+Same Day 0, Second Class 2, Standard Class 4). Every First Class order takes
+exactly 2 days, so 100% of them are counted as late.
+
+**Decision:** I keep the data as it is. The late rate is calculated as defined
+(real days are more than scheduled days). The report shows a note under the chart.
+
+**Evidence:** `scripts/checks/shipping_modes.sql`

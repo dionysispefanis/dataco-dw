@@ -19,8 +19,8 @@ delay KPIs (e.g. an order with 3 lines counted 3 times).
 
 ## 2. Columns excluded from the warehouse
 
-**Decision:** 14 of the 53 source columns are not carried into the dw layer
-(39 are kept). The staging table keeps all 53 columns as received.
+**Decision:** 16 of the 53 source columns are not carried into the dw layer
+(37 are kept). The staging table keeps all 53 columns as received.
 
 **Duplicates** (identical to a column we keep):
 - `Order Customer Id` = `Customer Id`
@@ -43,6 +43,10 @@ delay KPIs (e.g. an order with 3 lines counted 3 times).
 - `Customer Fname`
 - `Customer Lname`
 - `Customer Street`
+
+**Not needed** (no KPI or chart uses them):
+- `Latitude`
+- `Longitude`
 
 **Evidence** (`src/explore_checks.py`):
 - Each duplicate pair: `!=` comparison returns 0 differing rows.
@@ -76,8 +80,8 @@ defined in decision 4.
 - Real minus scheduled days is +1 to +4 for late orders, 0 for on time, and negative for early.
 - For canceled shipments the difference ranges from -2 to +4, so it has no meaning.
 
-**To verify in the cleaning phase:** 1,224 rows where `Sales` minus discount differs from `Order Item Total`.
-
+**Checked:** `Sales` minus discount differs from `Order Item Total` by one cent at most
+(check 8 in `scripts/checks/staging_checks.sql`). The source rounds half cents. No correction is needed.
 
 ## 4. Dimensions
 
@@ -111,8 +115,8 @@ defined in decision 4.
 **Decision:** three layers in SQL Server: staging → clean → dw.
 
 - `staging`: exact copy of the CSV, all 53 columns, as received. Loaded by Python.
-- `clean`: fixes types (dates, numbers) and broken characters, drops the 14 excluded columns, calculates delay in days. Plain `.sql` files.
-- `dw`: the five dimensions and two facts with generated keys. Plain `.sql` files.
+- `clean`: fixes types (dates, numbers) and broken characters, drops the 16 excluded columns, calculates delay in days. Plain `.sql` files.
+- `dw`: the six dimensions and two facts with generated keys. Plain `.sql` files.
 
 **Why:**
 - Each layer has one job, so errors are easy to locate.
@@ -177,8 +181,8 @@ defined in decision 4.
 **What I saw:** until September 2017, an order has about 3 lines. From November
 2017, every order has only 1 line.
 
-**What happens:** the number of orders stays the same (about 2,000 per month),
-but the monthly revenue gets smaller.
+**What happens:** the number of orders does not drop (about 1,700 per month until
+September 2017, about 2,100 after), but the monthly revenue gets smaller.
 
 **Decision:** I keep the data as it is and I add a note under the revenue chart.
 
